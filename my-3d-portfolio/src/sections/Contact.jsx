@@ -31,7 +31,7 @@ const Contact = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://your-vercel-project-name.vercel.app/api/contact", {
+      const response = await fetch("https://anshumansinh-portfolio.vercel.app/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
