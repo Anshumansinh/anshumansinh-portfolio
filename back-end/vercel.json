@@ -1,15 +1,17 @@
 {
     "version": 2,
-    "builds": [
-        {
-            "src": "server.js",
-            "use": "@vercel/node"
+    "functions": {
+        "api/contact.js": {
+            "runtime": "nodejs18.x"
         }
-    ],
+    },
     "routes": [
         {
-            "src": "/api/(.*)",
-            "dest": "server.js"
+            "src": "/api/contact",
+            "methods": [
+                "POST"
+            ],
+            "dest": "/api/contact.js"
         }
     ]
 }
