@@ -12,7 +12,7 @@ const Testimonials = () => {
         />
 
         <div className="lg:columns-3 md:columns-2 columns-1 mt-16">
-          {testimonials.map((testimonial, index) => (
+          {/* {testimonials.map((testimonial, index) => (
             <GlowCard card={testimonial} key={index} index={index}>
               <div className="flex items-center gap-3">
                 <div>
@@ -24,7 +24,7 @@ const Testimonials = () => {
                 </div>
               </div>
             </GlowCard>
-          ))}
+          ))} */}
         </div>
       </div>
     </section>

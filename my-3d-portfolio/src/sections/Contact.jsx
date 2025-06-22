@@ -1,6 +1,4 @@
 import { useRef, useState } from "react";
-import emailjs from "@emailjs/browser";
-
 import TitleHeader from "../components/TitleHeader";
 import ContactExperience from "../components/models/contact/ContactExperience";
 
@@ -12,40 +10,62 @@ const Contact = () => {
     email: "",
     message: "",
   });
+  const [notification, setNotification] = useState({
+    show: false,
+    message: "",
+    type: "", // 'success' or 'error'
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true); // Show loading state
-
-    try {
-      await emailjs.sendForm(
-        import.meta.env.VITE_APP_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_APP_EMAILJS_TEMPLATE_ID,
-        formRef.current,
-        import.meta.env.VITE_APP_EMAILJS_PUBLIC_KEY
-      );
-
-      // Reset form and stop loading
-      setForm({ name: "", email: "", message: "" });
-    } catch (error) {
-      console.error("EmailJS Error:", error); // Optional: show toast
-    } finally {
-      setLoading(false); // Always stop loading, even on error
-    }
+  const showNotification = (message, type) => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => setNotification({ show: false, message: "", type: "" }), 5000);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (response.ok) {
+        setForm({ name: "", email: "", message: "" });
+        showNotification("Message sent successfully!", "success");
+      } else {
+        showNotification("Failed to send message. Please try again later.", "error");
+      }
+    } catch (error) {
+      console.error("Contact Error:", error);
+      showNotification("Failed to send message. Please try again later.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <section id="contact" className="flex-center section-padding">
       <div className="w-full h-full md:px-10 px-5">
         <TitleHeader
-          title="Get in Touch – Let’s Connect"
-          sub="💬 Have questions or ideas? Let’s talk! 🚀"
+          title="Get in Touch – Let's Connect"
+          sub="💬 Have questions or ideas? Let's talk! 🚀"
         />
+
+        {/* Notification Toast */}
+        {notification.show && (
+          <div className={`fixed top-5 right-5 z-50 p-4 rounded-md shadow-lg 
+            ${notification.type === "success" ? "bg-green-500" : "bg-red-500"} text-white`}>
+            {notification.message}
+          </div>
+        )}
+
         <div className="grid-12-cols mt-16">
           <div className="xl:col-span-5">
             <div className="flex-center card-border rounded-xl p-10">
@@ -62,7 +82,7 @@ const Contact = () => {
                     name="name"
                     value={form.name}
                     onChange={handleChange}
-                    placeholder="What’s your good name?"
+                    placeholder="What's your good name?"
                     required
                   />
                 </div>
@@ -75,7 +95,7 @@ const Contact = () => {
                     name="email"
                     value={form.email}
                     onChange={handleChange}
-                    placeholder="What’s your email address?"
+                    placeholder="What's your email address?"
                     required
                   />
                 </div>
@@ -93,7 +113,7 @@ const Contact = () => {
                   />
                 </div>
 
-                <button type="submit">
+                <button type="submit" disabled={loading}>
                   <div className="cta-button group">
                     <div className="bg-circle" />
                     <p className="text">
