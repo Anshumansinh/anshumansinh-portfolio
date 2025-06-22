@@ -1,13 +1,5 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
 const nodemailer = require('nodemailer');
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// Nodemailer setup
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -16,20 +8,20 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-app.post('/api/contact', async (req, res) => {
-    const { name, email, message } = req.body;
+module.exports = async (req, res) => {
+    if (req.method !== 'POST') {
+        return res.status(405).send('Method Not Allowed');
+    }
 
     try {
         await transporter.sendMail({
-            from: email,
+            from: req.body.email,
             to: process.env.GMAIL_USER,
-            subject: `New message from ${name}`,
-            text: message
+            subject: `New message from ${req.body.name}`,
+            text: req.body.message
         });
         res.status(200).json({ success: true });
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+        res.status(500).json({ error: error.message });
     }
-});
-
-module.exports = app; // Required for Vercel
+};
