@@ -10,8 +10,18 @@ const transporter = nodemailer.createTransport({
 });
 
 module.exports = async (req, res) => {
-    // Set CORS headers for all responses
-    res.setHeader('Access-Control-Allow-Origin', '*'); // Or specify your frontend domain for more security
+    // CORS headers
+    const allowedOrigins = [
+        'https://anshumansinh-portfolio-1sihx0esd-anshumansinhs-projects.vercel.app',
+        'https://anshumansinh-portfolio.vercel.app'
+    ];
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    } else {
+        res.setHeader('Access-Control-Allow-Origin', allowedOrigins[0]);
+    }
+    res.setHeader('Vary', 'Origin');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
